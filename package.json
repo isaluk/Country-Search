@@ -1,0 +1,27 @@
+{
+  "name": "country-search",
+  "version": "1.0.0",
+  "description": "Live country search with request cancellation in TypeScript",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "serve public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isaluk/Country-Search.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/isaluk/Country-Search/issues"
+  },
+  "homepage": "https://github.com/isaluk/Country-Search#readme",
+  "devDependencies": {
+    "serve": "^14.2.8",
+    "typescript": "^7.0.2"
+  }
+}
