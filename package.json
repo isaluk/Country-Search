@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -30,10 +31,19 @@
     "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.14.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.10.1",
     "serve": "^14.2.8",
     "typescript": "~6.0",
     "typescript-eslint": "^8.73.0",
     "vitest": "^5.1.0"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.{html,css,json,md}": "prettier --write"
   }
 }
