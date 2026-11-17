@@ -1,1 +1,1 @@
-document.body.append("Country Search: setup works");
+document.body.append('Country Search: setup works');
