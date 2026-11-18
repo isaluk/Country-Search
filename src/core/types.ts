@@ -39,3 +39,8 @@ export interface Country {
   readonly currencies: readonly string[];
   readonly demonym: string | null;
 }
+
+export type SearchFn = (
+  query: string,
+  signal: AbortSignal,
+) => Promise<readonly Country[]>;
