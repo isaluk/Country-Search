@@ -1,4 +1,5 @@
 import { searchCountries } from './core/api.js';
+import { createCachedSearch } from './core/cache.js';
 import {
   createSearchController,
   type SearchState,
@@ -43,7 +44,7 @@ const renderResults = (state: SearchState) => {
 };
 
 const controller = createSearchController({
-  search: searchCountries,
+  search: createCachedSearch(searchCountries),
   onChange: renderResults,
 });
 
