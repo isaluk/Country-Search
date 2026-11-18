@@ -3,7 +3,7 @@ import {
   createSearchController,
   type SearchState,
 } from './core/search-controller.js';
-import type { Country } from './core/types.js';
+import { createDetailsDialog } from './ui/details-view.js';
 import { createElement } from './ui/dom.js';
 import { createIcon } from './ui/icons.js';
 import { createResultsView } from './ui/results-view.js';
@@ -26,14 +26,14 @@ const resultsRegion = createElement('section', {
   ariaLive: 'polite',
 });
 
-const openDetails = (_country: Country) => {};
+const details = createDetailsDialog();
 
 const renderResults = (state: SearchState) => {
   resultsRegion.ariaBusy = String(state.status === 'loading');
   resultsRegion.replaceChildren(
     createResultsView(state, {
       onRetry: () => controller.retry(),
-      onOpen: openDetails,
+      onOpen: details.open,
       onSuggest: (text) => {
         searchForm.setValue(text);
         controller.searchNow(text);
@@ -137,6 +137,11 @@ const createHowItWorks = (): HTMLElement =>
     ]),
   ]);
 
-document.body.append(createHero(), createSheet(), createHowItWorks());
+document.body.append(
+  createHero(),
+  createSheet(),
+  createHowItWorks(),
+  details.element,
+);
 
 renderResults(controller.getState());
