@@ -1,14 +1,17 @@
 import { searchCountries } from './core/api.js';
 import { createCachedSearch } from './core/cache.js';
+import { addToHistory } from './core/history.js';
 import {
   createSearchController,
   type SearchState,
 } from './core/search-controller.js';
 import { createDetailsDialog } from './ui/details-view.js';
 import { createElement } from './ui/dom.js';
+import { createHistoryView } from './ui/history-view.js';
 import { createIcon } from './ui/icons.js';
 import { createResultsView } from './ui/results-view.js';
 import { createSearchForm } from './ui/search-view.js';
+import { loadHistory, saveHistory } from './ui/storage.js';
 
 const STEPS = [
   ['01', 'Type', 'Results arrive while you type.'],
@@ -20,6 +23,12 @@ const STEPS = [
   ['03', 'Open', 'Tap a card for borders, languages and money.'],
 ] as const;
 
+let history: readonly string[] = loadHistory();
+
+const historyRegion = createElement('section', {
+  className: 'history',
+  ariaLabel: 'Recent searches',
+});
 const resultsRegion = createElement('section', {
   id: 'results',
   className: 'results',
@@ -29,23 +38,48 @@ const resultsRegion = createElement('section', {
 
 const details = createDetailsDialog();
 
+const searchFor = (text: string) => {
+  searchForm.setValue(text);
+  controller.searchNow(text);
+};
+
+const renderHistory = () => {
+  const view = createHistoryView(history, {
+    onSelect: searchFor,
+    onClear: () => updateHistory([]),
+  });
+
+  historyRegion.replaceChildren(...(view ? [view] : []));
+};
+
+const updateHistory = (next: readonly string[]) => {
+  history = next;
+  saveHistory(history);
+  renderHistory();
+};
+
 const renderResults = (state: SearchState) => {
   resultsRegion.ariaBusy = String(state.status === 'loading');
   resultsRegion.replaceChildren(
     createResultsView(state, {
       onRetry: () => controller.retry(),
       onOpen: details.open,
-      onSuggest: (text) => {
-        searchForm.setValue(text);
-        controller.searchNow(text);
-      },
+      onSuggest: searchFor,
     }),
   );
 };
 
+const handleStateChange = (state: SearchState) => {
+  renderResults(state);
+
+  if (state.status === 'success') {
+    updateHistory(addToHistory(history, state.query));
+  }
+};
+
 const controller = createSearchController({
   search: createCachedSearch(searchCountries),
-  onChange: renderResults,
+  onChange: handleStateChange,
 });
 
 const searchForm = createSearchForm({
@@ -85,6 +119,7 @@ const createHero = (): HTMLElement =>
         'Live search over 250 countries and territories. Old answers are cancelled before they can land on the screen.',
       ]),
       searchForm.element,
+      historyRegion,
     ]),
     createElement('p', { className: 'hero__stat' }, [
       createElement('span', { className: 'hero__stat-number' }, ['250+']),
@@ -145,4 +180,5 @@ document.body.append(
   details.element,
 );
 
+renderHistory();
 renderResults(controller.getState());
