@@ -4,8 +4,23 @@ export interface Debounced<Args extends unknown[]> {
 }
 
 export const debounce = <Args extends unknown[]>(
-  _fn: (...args: Args) => void,
-  _delay: number,
+  fn: (...args: Args) => void,
+  delay: number,
 ): Debounced<Args> => {
-  throw new Error('Not implemented');
+  let timerId: ReturnType<typeof setTimeout> | undefined;
+
+  const cancel = () => {
+    clearTimeout(timerId);
+    timerId = undefined;
+  };
+
+  const debounced = (...args: Args) => {
+    cancel();
+    timerId = setTimeout(() => {
+      timerId = undefined;
+      fn(...args);
+    }, delay);
+  };
+
+  return Object.assign(debounced, { cancel });
 };
