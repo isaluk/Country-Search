@@ -25,8 +25,11 @@ const createState = (
 ): HTMLElement =>
   createElement('div', { className: `state state--${modifier}` }, children);
 
-const createTitle = (text: string): HTMLElement =>
-  createElement('h2', { className: 'state__title' }, [text]);
+const createTitle = (...parts: readonly (Node | string)[]): HTMLElement =>
+  createElement('h2', { className: 'state__title' }, parts);
+
+const createMark = (text: string): HTMLElement =>
+  createElement('mark', { className: 'mark' }, [text]);
 
 const createText = (lines: readonly string[]): HTMLElement =>
   createElement(
@@ -59,7 +62,7 @@ const createLoading = (query: string): HTMLElement => {
       { className: 'dots', ariaHidden: 'true' },
       [1, 2, 3].map(() => createElement('span', { className: 'dots__dot' })),
     ),
-    createTitle(`Searching “${query}”`),
+    createTitle('Searching ', createMark(`“${query}”`)),
     createElement(
       'ul',
       {
@@ -140,9 +143,6 @@ const createError = (
   return error;
 };
 
-const createMark = (text: string): HTMLElement =>
-  createElement('mark', { className: 'results__mark' }, [text]);
-
 const createSuccess = (
   state: Extract<SearchState, { status: 'success' }>,
   onOpen: (country: Country) => void,
@@ -152,6 +152,9 @@ const createSuccess = (
   return createElement('div', { className: 'results__content' }, [
     createElement('div', { className: 'results__intro' }, [
       createElement('p', { className: 'results__count' }, [
+        createElement('span', { className: 'results__eyebrow' }, [
+          'Search results',
+        ]),
         createElement('span', { className: 'results__number' }, [
           formatCount(count),
         ]),
@@ -161,10 +164,11 @@ const createSuccess = (
       ]),
       createElement('p', { className: 'results__statement' }, [
         'We found ',
-        createMark(`${count} ${count === 1 ? 'country' : 'countries'}`),
-        ' hiding ',
-        createMark(`“${state.query}”`),
-        ' in their names. Open any card to see its borders, languages and money.',
+        createMark(
+          `${count} ${count === 1 ? 'country' : 'countries'} hiding “${state.query}”`,
+        ),
+        ' in their names. Open any card to see its ',
+        createMark('borders, languages and money.'),
       ]),
     ]),
     createElement(

@@ -122,7 +122,10 @@ const createHero = (): HTMLElement =>
       historyRegion,
     ]),
     createElement('p', { className: 'hero__stat' }, [
-      createElement('span', { className: 'hero__stat-number' }, ['250+']),
+      createElement('span', { className: 'hero__stat-number' }, [
+        '250',
+        createElement('span', { className: 'hero__accent' }, ['+']),
+      ]),
       createElement('span', { className: 'hero__stat-text' }, [
         'countries & territories in one search box',
       ]),
